@@ -137,14 +137,66 @@ const columns: DataTableColumn<TrendingCoin>[] = [
     }
 ];
 const TrendingCoins = async () => {
-    const trendingCoins = await fetchCoinData<{ coins: TrendingCoin[] }>('search/trending', undefined, 300);
+    let trendingCoins: { coins: TrendingCoin[] } | null = null;
+    try {
+        trendingCoins = await fetchCoinData<{ coins: TrendingCoin[] }>('search/trending', undefined, 300);
+    } catch (err) {
+        console.error('TrendingCoins fetch failed:', err);
+    }
+
+    if (!trendingCoins || !trendingCoins.coins) {
+        // Server-rendered fallback matching the skeleton styles
+        interface SkeletonRow { id: number }
+        const skeletonColumns: DataTableColumn<SkeletonRow>[] = [
+            {
+                header: 'Name',
+                cellClassName: 'name-cell',
+                cell: () => (
+                    <div className="name-link">
+                        <div className="name-image bg-dark-400 rounded-full" />
+                        <div className="name-line bg-dark-400 rounded" />
+                    </div>
+                )
+            },
+            {
+                header: '24h change',
+                cellClassName: 'change-cell',
+                cell: () => (
+                    <div className="h-4 w-16 bg-dark-400 rounded" />
+                )
+            },
+            {
+                header: 'Price',
+                cellClassName: 'price-cell',
+                cell: () => (
+                    <div className="h-4 w-20 bg-dark-400 rounded" />
+                )
+            }
+        ];
+
+        const skeletonRows: SkeletonRow[] = Array.from({ length: 5 }, (_, i) => ({ id: i }));
+
+        return (
+            <div id="trending-coins-fallback">
+                <h4>Trending Coins</h4>
+                <div className="trending-coins-table">
+                    <DataTable
+                        columns={skeletonColumns}
+                        data={skeletonRows}
+                        rowKey={(_, index) => `skeleton-${index}`}
+                        tableClassName='trending-coins-table'
+                        headerCellClassName='py-3'
+                        bodyCellClassName='py-2'
+                    />
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div id="trending-coins">
             <h4>Trending Coins</h4>
-            <div id="trending-coins">
-                <DataTable columns={columns} data={trendingCoins.coins.slice(0, 6) || []} rowKey={(coin) => coin.item.id} tableClassName='trending-coins-table' headerCellClassName='py-3' bodyCellClassName='py-2' />
-            </div>
+            <DataTable columns={columns} data={trendingCoins.coins.slice(0, 6) || []} rowKey={(coin) => coin.item.id} tableClassName='trending-coins-table' headerCellClassName='py-3' bodyCellClassName='py-2' />
         </div>
     )
 }
