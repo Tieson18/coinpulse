@@ -3,9 +3,9 @@
 import qs from "query-string";
 
 const BASE_URL = process.env.COINGECKO_BASE_URL;
-const API_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
+const API_KEY = process.env.COINGECKO_API_KEY;
 
-if (!BASE_URL || !API_KEY) throw new Error('Missing COINGECKO_BASE_URL or NEXT_PUBLIC_COINGECKO_API_KEY environment variables');
+if (!BASE_URL || !API_KEY) throw new Error('Missing COINGECKO_BASE_URL or COINGECKO_API_KEY environment variables');
 
 export async function fetchCoinData<T>(endpoint: string, params?: QueryParams, revalidate = 60): Promise<T> {
     const url = qs.stringifyUrl({
