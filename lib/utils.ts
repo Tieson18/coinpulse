@@ -71,13 +71,24 @@ export function timeAgo(date: string | number | Date): string {
 
 export function convertOHLCData(data: OHLCData[]) {
   return data
-    .map((d) => ({
-      time: d[0] as Time, // ensure seconds, not ms
-      open: d[1],
-      high: d[2],
-      low: d[3],
-      close: d[4],
-    }))
+    .map((d) => {
+      let t: number | string = d[0] as unknown as number;
+      if (typeof t === 'number') {
+        // If timestamp looks like milliseconds (large > 1e11), convert to seconds
+        if (t > 1e11) {
+          t = Math.floor(t / 1000);
+        } else {
+          t = Math.floor(t);
+        }
+      }
+      return {
+        time: t as Time,
+        open: d[1],
+        high: d[2],
+        low: d[3],
+        close: d[4],
+      };
+    })
     .filter((item, index, arr) => index === 0 || item.time !== arr[index - 1].time);
 }
 

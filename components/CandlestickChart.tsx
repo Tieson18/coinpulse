@@ -10,14 +10,13 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
     const chartRef = useRef<IChartApi | null>(null);
     const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
 
-    const [loading, setLoading] = useState(false);
     const [period, setPeriod] = useState<Period>(initialPeriod);
     const [ohlcData, setOhlcData] = useState<OHLCData[]>(data || []);
-    const [isPending, startTranisition] = useTransition();
+    const [isPending, startTransition] = useTransition();
 
     const fetchOhlcData = async (selectedPeriod: Period) => {
         try {
-            const { days, interval } = PERIOD_CONFIG[selectedPeriod];
+            const { days } = PERIOD_CONFIG[selectedPeriod];
             const newOhlcData = await fetchCoinData<OHLCData[]>(`coins/${coinId}/ohlc`, { vs_currency: 'usd', days, precision: 'full' });
             setOhlcData(newOhlcData || []);
         } catch (error) {
@@ -28,9 +27,9 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
     const handlePeriodChange = async (newPeriod: Period) => {
         if (newPeriod === period) return;
 
-        startTranisition(async () => {
-            setPeriod(newPeriod);
-            await fetchOhlcData(newPeriod);
+        setPeriod(newPeriod);
+        startTransition(() => {
+            fetchOhlcData(newPeriod);
         });
     }
 
@@ -60,13 +59,12 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
             chartRef.current = null;
             candleSeriesRef.current = null;
         }
-    }, [height]);
+    }, [height, period]);
 
     useEffect(() => {
         if (!candleSeriesRef.current) return
 
-        const convertToSeconds = ohlcData.map(item => [Math.floor(item[0] / 1000), item[1], item[2], item[3], item[4]]);
-        const converted = convertOHLCData(convertToSeconds as OHLCData[]);
+        const converted = convertOHLCData(ohlcData as OHLCData[]);
         candleSeriesRef.current.setData(converted);
         chartRef.current?.timeScale().fitContent();
     }, [ohlcData, period]);
@@ -82,7 +80,7 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
                             key={value}
                             className={period === value ? 'config-button-active' : 'config-button'}
                             onClick={() => handlePeriodChange(value)}
-                            disabled={loading}
+                            disabled={isPending}
                         >
                             {label}
                         </button>

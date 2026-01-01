@@ -12,7 +12,7 @@ export const navItems = [
     },
     {
         label: 'Search',
-        href: '/',
+        href: '/search',
     },
     {
         label: 'All Coins',
