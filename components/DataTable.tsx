@@ -19,7 +19,7 @@ const DataTable = <T,>({ columns, data, rowKey, tableClassName, headerClassName,
             <TableHeader className={headerClassName}>
                 <TableRow className={cn('hover:bg-transparent', headerRowClassName)}>
                     {columns.map((column, i) => (
-                        <TableHead key={i} className={cn('bg-dark-400 text-purple-100 py-4 first:pl-5 last:pr-5', headerCellClassName)}>
+                        <TableHead key={i} className={cn('bg-dark-400 text-purple-100 py-4 first:pl-5 last:pr-5', headerCellClassName, column.headClassName)}>
                             {column.header}
                         </TableHead>
                     ))}
@@ -29,7 +29,7 @@ const DataTable = <T,>({ columns, data, rowKey, tableClassName, headerClassName,
                 {data.map((row, rowIndex) => (
                     <TableRow key={rowKey(row, rowIndex)} className={cn('overflow-hidden rounded-lg border-b border-purple-100/5 hover:bg-dark-400/30 relative', bodyRowClassName)}>
                         {columns.map((column, colIndex) => (
-                            <TableCell key={colIndex} className={cn('first:pl-5 last:pr-5 py-4', bodyCellClassName)}>
+                            <TableCell key={colIndex} className={cn('first:pl-5 last:pr-5 py-4', bodyCellClassName, column.cellClassName)}>
                                 {column.cell(row, rowIndex)}
                             </TableCell>
                         ))}
