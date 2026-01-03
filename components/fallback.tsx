@@ -74,3 +74,63 @@ export const TrendingCoinsFallback = () => {
     </div>
   );
 };
+
+export const CategoriesFallback = () => {
+  interface SkeletonCatRow { id: number }
+
+  const columns: DataTableColumn<SkeletonCatRow>[] = [
+    {
+      header: 'Category',
+      cellClassName: 'category-cell',
+      cell: () => (
+        <div className="category-skeleton bg-dark-400 animate-pulse rounded" />
+      ),
+    },
+    {
+      header: 'Top Gainers',
+      cellClassName: 'top-gainers-cell',
+      cell: () => (
+        <div className="flex gap-2">
+          <div className="coin-skeleton bg-dark-400 animate-pulse" />
+          <div className="coin-skeleton bg-dark-400 animate-pulse" />
+          <div className="coin-skeleton bg-dark-400 animate-pulse" />
+        </div>
+      ),
+    },
+    {
+      header: '24h Change',
+      cellClassName: 'change-cell',
+      cell: () => (
+        <div className="flex items-center gap-2">
+          <div className="change-icon bg-dark-400 animate-pulse" />
+          <div className="value-skeleton-sm bg-dark-400 animate-pulse rounded" />
+        </div>
+      ),
+    },
+    {
+      header: 'Market Cap',
+      cellClassName: 'market-cap-cell',
+      cell: () => (
+        <div className="value-skeleton-lg bg-dark-400 animate-pulse rounded" />
+      ),
+    },
+    {
+      header: '24h Volume',
+      cellClassName: 'volume-cell',
+      cell: () => (
+        <div className="value-skeleton-md bg-dark-400 animate-pulse rounded" />
+      ),
+    },
+  ];
+
+  const rows: SkeletonCatRow[] = Array.from({ length: 6 }, (_, i) => ({ id: i }));
+
+  return (
+    <div id="categories-fallback">
+      <h4>Top Categories</h4>
+      <div className="px-0">
+        <DataTable columns={columns} data={rows} rowKey={(_, idx) => `cat-skel-${idx}`} tableClassName="mt-3" />
+      </div>
+    </div>
+  );
+};

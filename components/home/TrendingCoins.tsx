@@ -2,7 +2,7 @@ import { fetchCoinData } from '@/lib/coingecko.actions';
 import React from 'react'
 import DataTable from '../DataTable';
 import { TrendingDown, TrendingUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPercentage } from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -118,8 +118,9 @@ const columns: DataTableColumn<TrendingCoin>[] = [
             const isTrendingUp = item.data.price_change_percentage_24h.usd >= 0;
             return (
                 <div className={cn('price-change-cell', isTrendingUp ? 'text-green-500' : 'text-red-500')}>
-                    <span>
-                        {isTrendingUp ? <TrendingUp width={16} height={16} /> : <TrendingDown width={16} height={16} />} {item.data.price_change_percentage_24h.usd.toFixed(2)}%
+                    <span className='flex items-center'>
+                        {formatPercentage(item.data.price_change_percentage_24h.usd)}
+                        {isTrendingUp ? <TrendingUp width={16} height={16} /> : <TrendingDown width={16} height={16} />}
                     </span>
                 </div>
             )
