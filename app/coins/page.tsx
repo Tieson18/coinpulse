@@ -20,7 +20,7 @@ const Coins = async ({ searchParams }: NextPageProps) => {
         sparkline: false,
         price_change_percentage: '24h'
     });
-    const colunms: DataTableColumn<CoinMarketData>[] = [
+    const columns: DataTableColumn<CoinMarketData>[] = [
         {
             header: 'Rank', cellClassName: 'rank-cell', cell: (coin) =>
                 <>
@@ -45,7 +45,7 @@ const Coins = async ({ searchParams }: NextPageProps) => {
                 return (
                     <div className={cn('change-cell', isTrendingUp ? 'text-green-500' : 'text-red-500')}>
                         <span className='flex items-center'>
-                            {formatPercentage(coin.price_change_24h ?? 0)}
+                            {formatPercentage(coin.price_change_percentage_24h ?? 0)}
                             {isTrendingUp ? <TrendingUp width={16} height={16} /> : <TrendingDown width={16} height={16} />}
                         </span>
                     </div>
@@ -64,7 +64,7 @@ const Coins = async ({ searchParams }: NextPageProps) => {
     return (
         <main>
             <h1>All Coins</h1>
-            <DataTable columns={colunms} data={allCoins} rowKey={coin => coin.id} />
+            <DataTable columns={columns} data={allCoins} rowKey={coin => coin.id} />
             <CoinsPagination currentPage={currentPage} totalPages={estTotalPages} hasMorePages={hasMorePages} />
         </main>
     )

@@ -7,15 +7,27 @@ import { TrendingDown, TrendingUp } from 'lucide-react';
 
 export const Categories = async () => {
     const categories = await fetchCoinData<Category[]>(`/coins/categories`);
+
+    // Helper to derive a coin name/label from image URL
+    const getCoinLabel = (imageUrl: string, index: number): string => {
+        if (!imageUrl) return `Unknown coin logo ${index}`;
+        // Extract coin name from CoinGecko CDN URL pattern: .../coins/1/large.png -> "bitcoin"
+        const match = imageUrl.match(/\/coins\/([^/]+)\//);
+        if (match?.[1]) {
+            return `${match[1]} logo`;
+        }
+        return `coin logo ${index}`;
+    };
+
     const columns: DataTableColumn<Category>[] = [
         { header: 'Category', cellClassName: 'category-cell', cell: (category) => category.name },
         {
-            header: 'Top Gainers', cellClassName: 'top-gainers-cell', cell: (category) => category.top_3_coins.map(coin =>
+            header: 'Top Gainers', cellClassName: 'top-gainers-cell', cell: (category) => category.top_3_coins.map((coin, index) =>
 
                 <Image
-                    key={coin}
+                    key={index}
                     src={coin}
-                    alt={coin}
+                    alt={getCoinLabel(coin, index)}
                     width={28}
                     height={28}
                 />
