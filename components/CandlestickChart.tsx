@@ -9,7 +9,7 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
     const chartContainerRef = useRef<HTMLDivElement | null>(null);
     const chartRef = useRef<IChartApi | null>(null);
     const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
-    const prevOhlcDataLenght = useRef<number>(data?.length || 0)
+    const prevOhlcDataLength = useRef<number>(data?.length || 0)
 
     const [period, setPeriod] = useState<Period>(initialPeriod);
     const [ohlcData, setOhlcData] = useState<OHLCData[]>(data || []);
@@ -31,9 +31,7 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
         if (newPeriod === period) return;
 
         setPeriod(newPeriod);
-        // startTransition(() => {
         fetchOhlcData(newPeriod);
-        // }); 
     }
 
     useEffect(() => {
@@ -71,14 +69,14 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
 
         let merged: OHLCData[];
         if (liveOhlcv) {
-            const liveTimestamp = liveOhlcv[0]
+            const liveTimestamp = Math.floor(liveOhlcv[0] / 1000)
 
             const lastHistoricalCandle = convertToSeconds[convertToSeconds.length - 1]
 
             if (lastHistoricalCandle && lastHistoricalCandle[0] === liveTimestamp) {
                 merged = [...convertToSeconds.slice(0, -1)]
             } else {
-                merged = [...convertToSeconds, liveOhlcv]
+                merged = [...convertToSeconds, [liveTimestamp, liveOhlcv[1], liveOhlcv[2], liveOhlcv[3], liveOhlcv[4]]]
             }
         } else {
             merged = convertToSeconds
@@ -90,10 +88,10 @@ const CandlestickChart = ({ children, data, coinId, height = 360, initialPeriod 
         // const converted = convertOHLCData(ohlcData as OHLCData[]);
         candleSeriesRef.current.setData(converted);
 
-        const datachanged = prevOhlcDataLenght.current !== ohlcData.length
+        const datachanged = prevOhlcDataLength.current !== ohlcData.length
         if (datachanged || mode === 'historical') {
             chartRef.current?.timeScale().fitContent();
-            prevOhlcDataLenght.current = ohlcData.length
+            prevOhlcDataLength.current = ohlcData.length
         }
     }, [ohlcData, period, liveOhlcv, mode]);
 

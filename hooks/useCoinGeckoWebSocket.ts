@@ -81,7 +81,12 @@ export const useCoinGeckoWebSocket = ({
 
     ws.onclose = () => setIsWsReady(false);
 
-    return ws.close;
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setIsWsReady(false);
+    };
+
+    return () => ws.close;
   }, []);
 
   useEffect(() => {
@@ -124,21 +129,21 @@ export const useCoinGeckoWebSocket = ({
       unsubscribeAll();
 
       subscribe("CGSimplePrice", { coin_id: [coinId], action: "set_tokens" });
+
+      const poolAddress = poolId.replace("_", ":") ?? "";
+      if (poolAddress) {
+        subscribe("OnChainTrade", {
+          "network_id:pool_addresses": [poolAddress],
+          action: "set_pools",
+        });
+
+        subscribe("OnChainOHLCV", {
+          "network_id:pool_addresses": [poolAddress],
+          interval: liveInterval,
+          action: "set_pools",
+        });
+      }
     });
-
-    const poolAddress = poolId.replace("_", ": ");
-    if (poolAddress) {
-      subscribe("OnChainTrade", {
-        "network_id:pool_addresses": [poolAddress],
-        action: "set_pools",
-      });
-
-      subscribe("OnChainOHLCV", {
-        "network_id:pool_addresses": [poolAddress],
-        interval: liveInterval,
-        action: "set_pools",
-      });
-    }
   }, [coinId, poolId, isWsReady, liveInterval]);
 
   return { price, trades, ohlcv, isConnected: isWsReady };

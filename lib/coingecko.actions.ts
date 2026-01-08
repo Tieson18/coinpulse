@@ -51,13 +51,16 @@ export async function getPools(
     name: "",
     network: "",
   };
+  try {
+    if (network && contractAddress) {
+      const poolData = await fetchCoinData<{ data: PoolData[] }>(
+        `/onchain/networks/${network}/tokens/${contractAddress}/pools`
+      );
 
-  if (network && contractAddress) {
-    const poolData = await fetchCoinData<{ data: PoolData[] }>(
-      `/onchain/networks/${network}/tokens/${contractAddress}/pools`
-    );
-
-    return poolData.data?.[0] ?? fallback;
+      return poolData.data?.[0] ?? fallback;
+    }
+  } catch {
+    return fallback;
   }
 
   try {

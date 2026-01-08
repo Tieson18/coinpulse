@@ -33,7 +33,7 @@ const page = async ({ params }: NextPageProps) => {
 
     const platform = coinData.asset_platform_id ? coinData.detail_platforms?.[coinData.asset_platform_id] : null;
 
-    const network = platform?.geckoterminal_url.split('/')[3] || null;
+    const network = platform?.geckoterminal_url?.split('/')[3] || null;
 
     const contractAddress = platform?.contract_address || null;
 
@@ -81,7 +81,7 @@ const page = async ({ params }: NextPageProps) => {
                 <h1 className="text-3xl font-bold">
                     Coin <strong>{id}</strong>
                 </h1>
-                <p>Trend Overveiw </p>
+                <p>Trend Overview </p>
                 <p>Recent Trades</p>
                 <p>Exchange Listings</p>
             </section>
