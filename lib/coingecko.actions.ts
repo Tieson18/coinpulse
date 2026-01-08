@@ -51,18 +51,21 @@ export async function getPools(
     name: "",
     network: "",
   };
-  try {
-    if (network && contractAddress) {
+  // If network and contractAddress are provided, try the precise endpoint first.
+  if (network && contractAddress) {
+    try {
       const poolData = await fetchCoinData<{ data: PoolData[] }>(
         `/onchain/networks/${network}/tokens/${contractAddress}/pools`
       );
 
       return poolData.data?.[0] ?? fallback;
+    } catch (err) {
+      console.error("getPools: error fetching pool by network/contract", err);
+      return fallback;
     }
-  } catch {
-    return fallback;
   }
 
+  // Fallback: search by id
   try {
     const poolData = await fetchCoinData<{ data: PoolData[] }>(
       "/onchain/search/pools",
@@ -70,7 +73,8 @@ export async function getPools(
     );
 
     return poolData.data?.[0] ?? fallback;
-  } catch {
+  } catch (err) {
+    console.error("getPools: error searching pools by id", err);
     return fallback;
   }
 }
