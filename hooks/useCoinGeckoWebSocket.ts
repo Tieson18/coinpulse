@@ -86,7 +86,7 @@ export const useCoinGeckoWebSocket = ({
       setIsWsReady(false);
     };
 
-    return () => ws.close;
+    return () => ws.close();
   }, []);
 
   useEffect(() => {
