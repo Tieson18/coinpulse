@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import { SearchModal } from './SearchModal'
 
 const Header = () => {
     const pathname = usePathname();
@@ -16,7 +17,7 @@ const Header = () => {
                 </Link>
                 <nav>
                     <Link href="/" className={cn('nav-link', { 'is-active': pathname === '/', 'is-home': true })}>Home</Link>
-                    <p>Search Modal</p>
+                    <SearchModal />
                     <Link href="/coins" className={cn('nav-link', { 'is-active': pathname === '/coins' })}>All Coins</Link>
                 </nav>
             </div>
